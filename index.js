@@ -14,21 +14,25 @@ async function startBot() {
   console.log("🤖 JOMS AI STARTED");
 
   // 🔑 PAIRING CODE (IMPORTANT)
-  setTimeout(async () => {
-    try {
-      if (!state.creds.registered) {
-        const phoneNumber = "2349036106257"; // change to your number
+ let pairingDone = false;
 
-        const code = await sock.requestPairingCode(phoneNumber);
+setTimeout(async () => {
+  try {
+    if (!state.creds.registered && !pairingDone) {
+      pairingDone = true;
 
-        console.log("================================");
-        console.log("PAIRING CODE:", code);
-        console.log("================================");
-      }
-    } catch (e) {
-      console.log("Pairing error:", e.message);
+      const phoneNumber = "2349036106257";
+
+      const code = await sock.requestPairingCode(phoneNumber);
+
+      console.log("================================");
+      console.log("PAIRING CODE:", code);
+      console.log("================================");
     }
-  }, 5000);
+  } catch (e) {
+    console.log("Pairing error:", e.message);
+  }
+}, 8000);
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const msg = messages[0];
