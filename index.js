@@ -30,23 +30,55 @@ async function startBot() {
   console.log("🤖 JOMS AI is starting...");
 
   // 🔑 PAIRING CODE (IMPORTANT)
-  sock.ev.on("connection.update", async (update) => {
-  const { connection } = update;
+  async function startBot() {
+  const { state, saveCreds } = await useMultiFileAuthState("auth");
 
-  if (connection === "open") {
-    console.log("✅ WhatsApp Connected (session ready)");
+  const sock = makeWASocket({
+    auth: state,
+    logger: P({ level: "silent" })
+  });
 
+  sock.ev.on("creds.update", saveCreds);
+
+  console.log("🤖 JOMS AI is starting...");
+
+  // 🔑 FIXED PAIRING LOGIC (IMPORTANT)
+  try {
     if (!state.creds.registered) {
-      const phoneNumber = "2349036106257"; // your number
+      const phoneNumber = "2349036106257";
 
-      const code = await sock.requestPairingCode(phoneNumber);
+      setTimeout(async () => {
+        const code = await sock.requestPairingCode(phoneNumber);
 
-      console.log("================================");
-      console.log("PAIRING CODE:", code);
-      console.log("================================");
+        console.log("================================");
+        console.log("PAIRING CODE:", code);
+        console.log("================================");
+      }, 5000); // wait 5 seconds for socket readiness
     }
+  } catch (e) {
+    console.log("Pairing error:", e.message);
   }
-});
+
+  sock.ev.on("messages.upsert", async ({ messages }) => {
+    const msg = messages[0];
+    if (!msg.message) return;
+
+    const jid = msg.key.remoteJid;
+
+    const text =
+      msg.message.conversation ||
+      msg.message.extendedTextMessage?.text ||
+      "";
+
+    if (!text.startsWith(".")) return;
+
+    const command = text.split(" ")[0].slice(1);
+
+    if (plugins[command]) {
+      await plugins[command].run(sock, msg, text);
+    }
+  });
+  }
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const msg = messages[0];
