@@ -30,15 +30,23 @@ async function startBot() {
   console.log("🤖 JOMS AI is starting...");
 
   // 🔑 PAIRING CODE (IMPORTANT)
-  if (!state.creds.registered) {
-    const phoneNumber = "2349036106257"; // CHANGE THIS
+  sock.ev.on("connection.update", async (update) => {
+  const { connection } = update;
 
-    const code = await sock.requestPairingCode(phoneNumber);
+  if (connection === "open") {
+    console.log("✅ WhatsApp Connected (session ready)");
 
-    console.log("================================");
-    console.log("PAIRING CODE:", code);
-    console.log("================================");
+    if (!state.creds.registered) {
+      const phoneNumber = "2349036106257"; // your number
+
+      const code = await sock.requestPairingCode(phoneNumber);
+
+      console.log("================================");
+      console.log("PAIRING CODE:", code);
+      console.log("================================");
+    }
   }
+});
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const msg = messages[0];
