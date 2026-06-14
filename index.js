@@ -5,8 +5,19 @@ const P = require("pino");
 const plugins = {};
 
 // load plugins
-fs.readdirSync("./plugins").forEach(file => {
-  const plugin = require("./plugins/" + file);
+const fs = require("fs");
+const path = require("path");
+
+const plugins = {};
+
+const pluginPath = path.join(__dirname, "plugins");
+
+if (!fs.existsSync(pluginPath)) {
+  fs.mkdirSync(pluginPath);
+}
+
+fs.readdirSync(pluginPath).forEach(file => {
+  const plugin = require(path.join(pluginPath, file));
   plugins[plugin.name] = plugin;
 });
 
