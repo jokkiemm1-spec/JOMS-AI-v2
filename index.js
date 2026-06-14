@@ -1,13 +1,11 @@
 const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
 const P = require("pino");
-
-
-// load plugins
 const fs = require("fs");
 const path = require("path");
 
 const plugins = {};
 
+// load plugins safely
 const pluginPath = path.join(__dirname, "plugins");
 
 if (!fs.existsSync(pluginPath)) {
@@ -29,7 +27,18 @@ async function startBot() {
 
   sock.ev.on("creds.update", saveCreds);
 
-  console.log("🤖 JOMS AI is running...");
+  console.log("🤖 JOMS AI is starting...");
+
+  // 🔑 PAIRING CODE (IMPORTANT)
+  if (!state.creds.registered) {
+    const phoneNumber = "2349036106257"; // CHANGE THIS
+
+    const code = await sock.requestPairingCode(phoneNumber);
+
+    console.log("================================");
+    console.log("PAIRING CODE:", code);
+    console.log("================================");
+  }
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
     const msg = messages[0];
