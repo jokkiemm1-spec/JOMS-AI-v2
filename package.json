@@ -1,0 +1,13 @@
+{
+  "name": "joms-ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "@whiskeysockets/baileys": "latest",
+    "pino": "^8.0.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
