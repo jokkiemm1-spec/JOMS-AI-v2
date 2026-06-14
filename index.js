@@ -1,7 +1,6 @@
 const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
 const P = require("pino");
 
-const plugins = {};
 
 // load plugins
 const fs = require("fs");
